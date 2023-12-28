@@ -19,4 +19,4 @@ docker-compose up -d
 yarn start:dev
 ```
 
-6. Open http://localhost:3000/api
+6. Open http://localhost:3000/graphql
