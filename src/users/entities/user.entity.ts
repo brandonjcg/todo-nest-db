@@ -24,7 +24,7 @@ export class User {
     array: true,
     default: ['users'],
   })
-  @Field(() => String)
+  @Field(() => [String])
   roles: string[];
 
   @Column({
