@@ -20,7 +20,7 @@ export class AuthService {
   async signUp(signUpInput: SignUpInput): Promise<AuthResponse> {
     const user = await this.usersService.create(signUpInput);
 
-    const token = '.token.';
+    const token = this.getJwtToken(user.id);
 
     return { user, token };
   }
