@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ValidRoles } from '../../auth/enums/valid-roles.enums';
 import {
   Column,
   Entity,
@@ -28,7 +29,7 @@ export class User {
   @Column({
     type: 'text',
     array: true,
-    default: ['users'],
+    default: [ValidRoles.user],
   })
   @Field(() => [String])
   roles: string[];

@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { User } from './entities/user.entity';
-import { SignUpInput } from 'src/auth/dto';
+import { SignUpInput } from '../auth/dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { ValidRoles } from 'src/auth/enums/valid-roles.enums';
+import { ValidRoles } from '../auth/enums/valid-roles.enums';
+import { UpdateUserInput } from './dto';
 
 @Injectable()
 export class UsersService {
@@ -87,5 +88,25 @@ export class UsersService {
     }
 
     throw new BadRequestException(error);
+  }
+
+  async update(
+    updateUserInput: UpdateUserInput,
+    userUpdater: User,
+  ): Promise<User> {
+    try {
+      const user: User = await this.usersRepository.preload({
+        id: updateUserInput.id,
+        ...updateUserInput,
+      });
+
+      user.lastUpdateBy = userUpdater;
+
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      this.handleDBError(
+        `Problem to update user with id ${updateUserInput.id}`,
+      );
+    }
   }
 }

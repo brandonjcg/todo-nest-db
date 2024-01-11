@@ -45,6 +45,7 @@ type Mutation {
   signup(signUpInput: SignUpInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
   blockUser(id: ID!): User!
+  update(updateUserInput: UpdateUserInput!): User!
 }
 
 input CreateItemInput {
@@ -79,4 +80,13 @@ input SignUpInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input UpdateUserInput {
+  email: String
+  fullName: String
+  password: String
+  id: ID!
+  roles: [ValidRoles!]
+  isActive: Boolean
 }
