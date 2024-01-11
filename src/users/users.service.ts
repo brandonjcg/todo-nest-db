@@ -66,8 +66,17 @@ export class UsersService {
     }
   }
 
-  async block(id: string): Promise<User> {
-    throw new Error(`Method not implemented, id sent: ${id}`);
+  async block(id: string, userUpdater: User): Promise<User> {
+    try {
+      const user: User = await this.findOneById(id);
+
+      user.isActive = false;
+      user.lastUpdateBy = userUpdater;
+
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      this.handleDBError(`User with id ${id} not found`);
+    }
   }
 
   private handleDBError(error: any): never {
