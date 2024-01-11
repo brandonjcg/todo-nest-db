@@ -16,7 +16,9 @@ export const CurrentUser = createParamDecorator(
     if (!user) throw new InternalServerErrorException('Request without user');
     if (!roles.length) return user;
 
-    const hasRole = user.roles.some((role: ValidRoles) => roles.includes(role));
+    const hasRole: boolean = user.roles.some((role: ValidRoles) =>
+      roles.includes(role),
+    );
     if (hasRole) return user;
 
     throw new ForbiddenException('User without role allowed');

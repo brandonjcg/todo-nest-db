@@ -26,8 +26,15 @@ type Query {
   items: [Item!]!
   item(id: ID!): Item!
   revalidate: AuthResponse!
-  users: [User!]!
+  users(roles: [ValidRoles!] = []): [User!]!
   user(id: ID!): User!
+}
+
+"""All valid roles"""
+enum ValidRoles {
+  admin
+  user
+  superUser
 }
 
 type Mutation {
