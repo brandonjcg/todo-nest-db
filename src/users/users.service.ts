@@ -1,14 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { User } from './entities/user.entity';
-import { SignUpInput } from 'src/auth/dto';
+import { SignUpInput } from '../auth/dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { ValidRoles } from '../auth/enums/valid-roles.enums';
+import { UpdateUserInput } from './dto';
 
 @Injectable()
 export class UsersService {
@@ -36,7 +33,7 @@ export class UsersService {
     try {
       return await this.usersRepository.findOneByOrFail({ email });
     } catch (error) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      this.handleDBError(`User with email ${email} not found`);
     }
   }
 
@@ -44,20 +41,43 @@ export class UsersService {
     try {
       return await this.usersRepository.findOneByOrFail({ id });
     } catch (error) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      this.handleDBError(`User with id ${id} not found`);
     }
   }
 
-  async findAll() {
-    return [];
+  async findAll(roles: ValidRoles[]): Promise<User[]> {
+    try {
+      if (!roles.length) return this.usersRepository.find();
+
+      return this.usersRepository
+        .createQueryBuilder()
+        .andWhere('ARRAY[roles] && ARRAY[:...roles]')
+        .setParameter('roles', roles)
+        .getMany();
+    } catch (error) {
+      this.handleDBError(error);
+    }
   }
 
   async findOne(id: string): Promise<User> {
-    throw new Error(`Method not implemented, id sent: ${id}`);
+    try {
+      return await this.usersRepository.findOneByOrFail({ id });
+    } catch (error) {
+      this.handleDBError(`User with id ${id} not found`);
+    }
   }
 
-  async block(id: string): Promise<User> {
-    throw new Error(`Method not implemented, id sent: ${id}`);
+  async block(id: string, userUpdater: User): Promise<User> {
+    try {
+      const user: User = await this.findOneById(id);
+
+      user.isActive = false;
+      user.lastUpdateBy = userUpdater;
+
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      this.handleDBError(`User with id ${id} not found`);
+    }
   }
 
   private handleDBError(error: any): never {
@@ -67,6 +87,26 @@ export class UsersService {
       throw new BadRequestException(error.detail.replace('Key ', ''));
     }
 
-    throw new BadRequestException(`Please check server logs`);
+    throw new BadRequestException(error);
+  }
+
+  async update(
+    updateUserInput: UpdateUserInput,
+    userUpdater: User,
+  ): Promise<User> {
+    try {
+      const user: User = await this.usersRepository.preload({
+        id: updateUserInput.id,
+        ...updateUserInput,
+      });
+
+      user.lastUpdateBy = userUpdater;
+
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      this.handleDBError(
+        `Problem to update user with id ${updateUserInput.id}`,
+      );
+    }
   }
 }

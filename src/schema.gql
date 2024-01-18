@@ -2,19 +2,22 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Item {
-  id: ID!
-  name: String!
-  quantity: Float!
-  quantityUnit: String
-}
-
 type User {
   id: ID!
   fullName: String!
   email: String!
   roles: [String!]!
   isActive: Boolean!
+  lastUpdateBy: User
+  items: [Item!]!
+  itemCount: Int!
+}
+
+type Item {
+  id: ID!
+  name: String!
+  quantityUnit: String
+  user: User!
 }
 
 type AuthResponse {
@@ -23,43 +26,28 @@ type AuthResponse {
 }
 
 type Query {
+  revalidate: AuthResponse!
+  users(roles: [ValidRoles!] = []): [User!]!
+  user(id: ID!): User!
   items: [Item!]!
   item(id: ID!): Item!
-  revalidate: AuthResponse!
-  users: [User!]!
-  user(id: ID!): User!
+}
+
+"""All valid roles"""
+enum ValidRoles {
+  admin
+  user
+  superUser
 }
 
 type Mutation {
-  createItem(createItemInput: CreateItemInput!): Item!
-  updateItem(updateItemInput: UpdateItemInput!): Item!
-  removeItem(id: ID!): Item!
   signup(signUpInput: SignUpInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
   blockUser(id: ID!): User!
-}
-
-input CreateItemInput {
-  """Item name"""
-  name: String!
-
-  """Item quantity"""
-  quantity: Float!
-
-  """Item quantity unit"""
-  quantityUnit: String
-}
-
-input UpdateItemInput {
-  """Item name"""
-  name: String
-
-  """Item quantity"""
-  quantity: Float
-
-  """Item quantity unit"""
-  quantityUnit: String
-  id: ID!
+  update(updateUserInput: UpdateUserInput!): User!
+  createItem(createItemInput: CreateItemInput!): Item!
+  updateItem(updateItemInput: UpdateItemInput!): Item!
+  removeItem(id: ID!): Item!
 }
 
 input SignUpInput {
@@ -71,4 +59,30 @@ input SignUpInput {
 input LoginInput {
   email: String!
   password: String!
+}
+
+input UpdateUserInput {
+  email: String
+  fullName: String
+  password: String
+  id: ID!
+  roles: [ValidRoles!]
+  isActive: Boolean
+}
+
+input CreateItemInput {
+  """Item name"""
+  name: String!
+
+  """Item quantity unit"""
+  quantityUnit: String
+}
+
+input UpdateItemInput {
+  """Item name"""
+  name: String
+
+  """Item quantity unit"""
+  quantityUnit: String
+  id: ID!
 }

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { ValidRoles } from '../enums/valid-roles.enums';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export const CurrentUser = createParamDecorator(
   (roles: ValidRoles[] = [], context: ExecutionContext) => {
@@ -16,7 +16,9 @@ export const CurrentUser = createParamDecorator(
     if (!user) throw new InternalServerErrorException('Request without user');
     if (!roles.length) return user;
 
-    const hasRole = user.roles.some((role: ValidRoles) => roles.includes(role));
+    const hasRole: boolean = user.roles.some((role: ValidRoles) =>
+      roles.includes(role),
+    );
     if (hasRole) return user;
 
     throw new ForbiddenException('User without role allowed');
