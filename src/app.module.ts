@@ -1,14 +1,15 @@
 import { ConfigModule } from '@nestjs/config';
 import { ApolloDriver } from '@nestjs/apollo';
+import { JwtService } from '@nestjs/jwt';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { join } from 'path';
 import { ItemsModule } from './items/items.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { JwtService } from '@nestjs/jwt';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { JwtService } from '@nestjs/jwt';
     ItemsModule,
     AuthModule,
     UsersModule,
+    SeedModule,
   ],
   controllers: [],
   providers: [],

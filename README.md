@@ -20,3 +20,5 @@ yarn start:dev
 ```
 
 6. Open http://localhost:3000/graphql
+
+7. Execute ```executeSeed``` mutation to create users and items
