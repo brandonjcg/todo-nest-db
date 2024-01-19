@@ -10,21 +10,21 @@ export const SEED_USERS: SeedUser[] = [
   {
     fullName: 'Fernando Herrera',
     email: 'fernando@google.com',
-    password: '123456',
+    password: 'password',
     roles: ['admin', 'superUser', 'user'],
     isActive: true,
   },
   {
     fullName: 'Melissa Flores',
     email: 'melissa@google.com',
-    password: '123456',
+    password: 'password',
     roles: ['user'],
     isActive: true,
   },
   {
     fullName: 'Hernando Vallejo',
     email: 'hernando@google.com',
-    password: '123456',
+    password: 'password',
     roles: ['user'],
     isActive: false,
   },
@@ -32,7 +32,7 @@ export const SEED_USERS: SeedUser[] = [
     fullName: 'Brandon Castillo',
     email: 'brajoel98@gmail.com',
     password: 'password',
-    roles: ['user', 'superUser'],
+    roles: ['user', 'superUser', 'admin'],
     isActive: true,
   },
 ];
