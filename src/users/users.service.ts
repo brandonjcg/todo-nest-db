@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { ValidRoles } from '../auth/enums/valid-roles.enums';
 import { UpdateUserInput } from './dto';
+import { PaginationArgs, SearchArgs } from '../common/dto';
 
 @Injectable()
 export class UsersService {
@@ -45,15 +46,30 @@ export class UsersService {
     }
   }
 
-  async findAll(roles: ValidRoles[]): Promise<User[]> {
+  async findAll(
+    roles: ValidRoles[],
+    paginationArgs: PaginationArgs,
+    searchArgs: SearchArgs,
+  ): Promise<User[]> {
     try {
       if (!roles.length) return this.usersRepository.find();
 
-      return this.usersRepository
+      const { limit, offset } = paginationArgs;
+
+      const query = this.usersRepository
         .createQueryBuilder()
+        .take(limit)
+        .skip(offset)
         .andWhere('ARRAY[roles] && ARRAY[:...roles]')
-        .setParameter('roles', roles)
-        .getMany();
+        .setParameter('roles', roles);
+
+      if (searchArgs.search) {
+        query.andWhere(`LOWER("email") LIKE LOWER(:search)`, {
+          search: `%${searchArgs.search}%`,
+        });
+      }
+
+      return query.getMany();
     } catch (error) {
       this.handleDBError(error);
     }
