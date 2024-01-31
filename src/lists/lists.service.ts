@@ -1,11 +1,10 @@
 import { Repository } from 'typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateListInput } from './dto/create-list.input';
-import { UpdateListInput } from './dto/update-list.input';
 import { List } from './entities/list.entity';
 import { PaginationArgs, SearchArgs } from '../common/dto';
 import { User } from '../users';
+import { CreateListInput, UpdateListInput } from './dto';
 
 @Injectable()
 export class ListsService {
@@ -14,7 +13,7 @@ export class ListsService {
     private readonly listRepository: Repository<List>,
   ) {}
 
-  create(createListInput: CreateListInput, user: User): Promise<List> {
+  async create(createListInput: CreateListInput, user: User): Promise<List> {
     const newItem = this.listRepository.create({
       ...createListInput,
       user,
@@ -23,7 +22,7 @@ export class ListsService {
     return this.listRepository.save(newItem);
   }
 
-  findAll(
+  async findAll(
     user: User,
     paginationArgs: PaginationArgs,
     searchArgs: SearchArgs,
@@ -45,8 +44,8 @@ export class ListsService {
     return query.getMany();
   }
 
-  findOne(id: string, user: User): Promise<List> {
-    const list = this.listRepository.findOneBy({
+  async findOne(id: string, user: User): Promise<List> {
+    const list = await this.listRepository.findOneBy({
       id,
       user: {
         id: user.id,
@@ -75,5 +74,9 @@ export class ListsService {
     await this.listRepository.remove(item);
 
     return { ...item, id };
+  }
+
+  async listsCountByUser(user: User): Promise<number> {
+    return this.listRepository.count({ where: { user: { id: user.id } } });
   }
 }

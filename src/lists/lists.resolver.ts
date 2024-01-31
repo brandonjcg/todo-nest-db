@@ -1,13 +1,12 @@
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 import { ListsService } from './lists.service';
 import { List } from './entities/list.entity';
-import { CreateListInput } from './dto/create-list.input';
-import { UpdateListInput } from './dto/update-list.input';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users';
 import { PaginationArgs, SearchArgs } from '../common/dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CreateListInput, UpdateListInput } from './dto';
 
 @Resolver(() => List)
 @UseGuards(JwtAuthGuard)
