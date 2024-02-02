@@ -2,10 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ListItem {
+  id: ID!
+  quantity: Float!
+  completed: Boolean!
+  list: List!
+  item: Item!
+}
+
 type List {
   id: ID!
   name: String!
   user: User!
+  items(offset: Int = 0, limit: Int = 10, search: String): [ListItem!]!
+  totalItems: Int!
 }
 
 type User {
@@ -26,6 +36,7 @@ type Item {
   name: String!
   quantityUnit: String
   user: User!
+  listItem: [ListItem!]!
 }
 
 type AuthResponse {
@@ -41,6 +52,7 @@ type Query {
   item(id: ID!): Item!
   lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
   list(id: ID!): List!
+  listItem(id: String!): ListItem!
 }
 
 """All valid roles"""
@@ -61,6 +73,8 @@ type Mutation {
   createList(createListInput: CreateListInput!): List!
   updateList(updateListInput: UpdateListInput!): List!
   removeList(id: ID!): List!
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
 
   """Execute seeders"""
   executeSeed: Boolean!
@@ -111,5 +125,26 @@ input CreateListInput {
 input UpdateListInput {
   """List name"""
   name: String
+  id: ID!
+}
+
+input CreateListItemInput {
+  """Item quantity"""
+  quantity: Float!
+
+  """Item completed"""
+  completed: Boolean! = false
+  listId: ID!
+  itemId: ID!
+}
+
+input UpdateListItemInput {
+  """Item quantity"""
+  quantity: Float
+
+  """Item completed"""
+  completed: Boolean = false
+  listId: ID
+  itemId: ID
   id: ID!
 }
