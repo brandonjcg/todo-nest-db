@@ -3,7 +3,7 @@ import { ListItemService } from './list-item.service';
 import { ListItem } from './entities/list-item.entity';
 import { CreateListItemInput } from './dto/create-list-item.input';
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateListItemInput } from './dto/update-list-item.input';
 
 @Resolver(() => ListItem)

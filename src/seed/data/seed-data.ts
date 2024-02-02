@@ -560,3 +560,12 @@ export const SEED_ITEMS: SeedItem[] = [
     category: 'other',
   },
 ];
+
+interface SeedList {
+  name: string;
+}
+export const SEED_LISTS: SeedList[] = [
+  { name: 'Compras de la semana' },
+  { name: 'Carne asada del domingo' },
+  { name: 'Compras para los tamalitos' },
+];
