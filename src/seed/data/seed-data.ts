@@ -10,21 +10,21 @@ export const SEED_USERS: SeedUser[] = [
   {
     fullName: 'Fernando Herrera',
     email: 'fernando@google.com',
-    password: '123456',
+    password: 'password',
     roles: ['admin', 'superUser', 'user'],
     isActive: true,
   },
   {
     fullName: 'Melissa Flores',
     email: 'melissa@google.com',
-    password: '123456',
+    password: 'password',
     roles: ['user'],
     isActive: true,
   },
   {
     fullName: 'Hernando Vallejo',
     email: 'hernando@google.com',
-    password: '123456',
+    password: 'password',
     roles: ['user'],
     isActive: false,
   },
@@ -32,7 +32,7 @@ export const SEED_USERS: SeedUser[] = [
     fullName: 'Brandon Castillo',
     email: 'brajoel98@gmail.com',
     password: 'password',
-    roles: ['user', 'superUser'],
+    roles: ['user', 'superUser', 'admin'],
     isActive: true,
   },
 ];
@@ -559,4 +559,13 @@ export const SEED_ITEMS: SeedItem[] = [
     quantityUnit: 'bottle',
     category: 'other',
   },
+];
+
+interface SeedList {
+  name: string;
+}
+export const SEED_LISTS: SeedList[] = [
+  { name: 'Compras de la semana' },
+  { name: 'Carne asada del domingo' },
+  { name: 'Compras para los tamalitos' },
 ];

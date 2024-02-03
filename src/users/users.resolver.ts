@@ -8,14 +8,18 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ValidRoles } from '../auth/enums/valid-roles.enums';
-import { UpdateUserInput, ValidRolesArgs } from './dto';
+import { Item } from '../items';
 import { ItemsService } from '../items/items.service';
+import { ListsService } from '../lists/lists.service';
+import { PaginationArgs, SearchArgs } from '../common/dto';
+import { UpdateUserInput, ValidRolesArgs } from './dto';
+import { List } from '../lists';
 
 @Resolver(() => User)
 @UseGuards(JwtAuthGuard)
@@ -23,15 +27,21 @@ export class UsersResolver {
   constructor(
     private readonly usersService: UsersService,
     private readonly itemsService: ItemsService,
+    private readonly listService: ListsService,
   ) {}
 
   @Query(() => [User], { name: 'users' })
   findAll(
-    @Args() validRoles: ValidRolesArgs,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @CurrentUser([ValidRoles.admin]) user: User,
+    @Args() validRoles: ValidRolesArgs,
+    @Args() paginationArgs: PaginationArgs,
+    @Args() searchArgs: SearchArgs,
   ): Promise<User[]> {
-    return this.usersService.findAll(validRoles.roles);
+    return this.usersService.findAll(
+      validRoles.roles,
+      paginationArgs,
+      searchArgs,
+    );
   }
 
   @Query(() => User, { name: 'user' })
@@ -44,17 +54,16 @@ export class UsersResolver {
 
   @Mutation(() => User, { name: 'blockUser' })
   blockUser(
-    @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @CurrentUser([ValidRoles.admin]) user: User,
+    @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
   ): Promise<User> {
     return this.usersService.block(id, user);
   }
 
   @Mutation(() => User, { name: 'update' })
   async update(
-    @Args('updateUserInput') updateUserInput: UpdateUserInput,
     @CurrentUser([ValidRoles.admin]) user: User,
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ): Promise<User> {
     return this.usersService.update(updateUserInput, user);
   }
@@ -65,5 +74,33 @@ export class UsersResolver {
     @Parent() user: User,
   ): Promise<number> {
     return this.itemsService.itemsCountByUser(user);
+  }
+
+  @ResolveField(() => [Item], { name: 'items' })
+  async getItemsByUser(
+    @CurrentUser([ValidRoles.admin]) adminUser: User,
+    @Parent() user: User,
+    @Args() paginationArgs: PaginationArgs,
+    @Args() searchArgs: SearchArgs,
+  ): Promise<Item[]> {
+    return this.itemsService.findAll(user, paginationArgs, searchArgs);
+  }
+
+  @ResolveField(() => [List], { name: 'lists' })
+  async getListsByUser(
+    @CurrentUser([ValidRoles.admin]) adminUser: User,
+    @Parent() user: User,
+    @Args() paginationArgs: PaginationArgs,
+    @Args() searchArgs: SearchArgs,
+  ): Promise<List[]> {
+    return this.listService.findAll(user, paginationArgs, searchArgs);
+  }
+
+  @ResolveField(() => Int, { name: 'listCount' })
+  listCount(
+    @CurrentUser([ValidRoles.admin]) adminUser: User,
+    @Parent() user: User,
+  ): Promise<number> {
+    return this.listService.listsCountByUser(user);
   }
 }

@@ -2,6 +2,22 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ListItem {
+  id: ID!
+  quantity: Float!
+  completed: Boolean!
+  list: List!
+  item: Item!
+}
+
+type List {
+  id: ID!
+  name: String!
+  user: User!
+  items(offset: Int = 0, limit: Int = 10, search: String): [ListItem!]!
+  totalItems: Int!
+}
+
 type User {
   id: ID!
   fullName: String!
@@ -9,8 +25,10 @@ type User {
   roles: [String!]!
   isActive: Boolean!
   lastUpdateBy: User
-  items: [Item!]!
   itemCount: Int!
+  items(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
+  lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
+  listCount: Int!
 }
 
 type Item {
@@ -18,6 +36,7 @@ type Item {
   name: String!
   quantityUnit: String
   user: User!
+  listItem: [ListItem!]!
 }
 
 type AuthResponse {
@@ -27,10 +46,13 @@ type AuthResponse {
 
 type Query {
   revalidate: AuthResponse!
-  users(roles: [ValidRoles!] = []): [User!]!
+  users(roles: [ValidRoles!] = [], offset: Int = 0, limit: Int = 10, search: String): [User!]!
   user(id: ID!): User!
-  items: [Item!]!
+  items(offset: Int = 0, limit: Int = 10, search: String): [Item!]!
   item(id: ID!): Item!
+  lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
+  list(id: ID!): List!
+  listItem(id: String!): ListItem!
 }
 
 """All valid roles"""
@@ -48,6 +70,11 @@ type Mutation {
   createItem(createItemInput: CreateItemInput!): Item!
   updateItem(updateItemInput: UpdateItemInput!): Item!
   removeItem(id: ID!): Item!
+  createList(createListInput: CreateListInput!): List!
+  updateList(updateListInput: UpdateListInput!): List!
+  removeList(id: ID!): List!
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
 
   """Execute seeders"""
   executeSeed: Boolean!
@@ -87,5 +114,37 @@ input UpdateItemInput {
 
   """Item quantity unit"""
   quantityUnit: String
+  id: ID!
+}
+
+input CreateListInput {
+  """List name"""
+  name: String!
+}
+
+input UpdateListInput {
+  """List name"""
+  name: String
+  id: ID!
+}
+
+input CreateListItemInput {
+  """Item quantity"""
+  quantity: Float!
+
+  """Item completed"""
+  completed: Boolean! = false
+  listId: ID!
+  itemId: ID!
+}
+
+input UpdateListItemInput {
+  """Item quantity"""
+  quantity: Float
+
+  """Item completed"""
+  completed: Boolean = false
+  listId: ID
+  itemId: ID
   id: ID!
 }

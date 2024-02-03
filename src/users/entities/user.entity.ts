@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { ValidRoles } from '../../auth/enums/valid-roles.enums';
 import { Item } from '../../items';
+import { List } from '../../lists';
 
 @Entity({ name: 'users' })
 @ObjectType()
@@ -52,6 +53,8 @@ export class User {
   lastUpdateBy?: User;
 
   @OneToMany(() => Item, (item) => item.user, { lazy: true })
-  @Field(() => [Item])
   items: Item[];
+
+  @OneToMany(() => List, (list) => list.user)
+  lists: List[];
 }
