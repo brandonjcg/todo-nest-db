@@ -1,0 +1,22 @@
+version: '3'
+
+services: 
+  todo-nest-graphql:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: nest-graphql
+    container_name: todo-nest-graphql
+    restart: always
+    ports:
+      - "${PORT}:${PORT}"
+
+    environment:
+      STATE: ${STATE}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT}
