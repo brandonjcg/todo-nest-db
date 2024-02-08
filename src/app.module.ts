@@ -43,9 +43,12 @@ import { ListItemModule } from './list-item/list-item.module';
       entities: [],
       synchronize: true,
       autoLoadEntities: true,
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl:
+        process.env.STATE === 'prod' &&
+        ({
+          rejectUnauthorized: false,
+          sslmode: 'require',
+        } as any),
     }),
     ItemsModule,
     AuthModule,
