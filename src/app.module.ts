@@ -43,6 +43,9 @@ import { ListItemModule } from './list-item/list-item.module';
       entities: [],
       synchronize: true,
       autoLoadEntities: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     }),
     ItemsModule,
     AuthModule,
